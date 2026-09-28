@@ -647,6 +647,7 @@ impl SandboxBuilder {
             args.push("--runtime".into());
             args.push(runtime.into());
         }
+        args.push("--cgroups=disabled".into());
 
         args.push(workspace.sandbox_image().name.clone());
 
