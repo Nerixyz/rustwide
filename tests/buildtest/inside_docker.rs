@@ -41,7 +41,12 @@ fn execute(test: &str) -> anyhow::Result<()> {
     );
     let src_mount = os_string!(&current_dir, ":", &container_prefix);
     let target_mount = os_string!(&target_parent_dir, ":", &target_prefix);
-    let docker_sock = os_string!(DOCKER_SOCKET, ":", DOCKER_SOCKET);
+    let docker_sock = {
+        let mut s =
+            std::env::var_os("XDG_RUNTIME_DIR").unwrap_or_else(|| os_string!("/run/user/1000"));
+        s.push("/podman/podman.sock:/run/podman/podman.sock");
+        s
+    };
 
     // NixOS's linkage model is different compared to any other Linux distribution, as it stores
     // all of the shared libraries it links to in /nix. Mounting that directory inside the
@@ -52,7 +57,7 @@ fn execute(test: &str) -> anyhow::Result<()> {
         &[]
     };
 
-    Command::new("docker")
+    Command::new("podman")
         .arg("run")
         .arg("-v")
         .arg(src_mount)

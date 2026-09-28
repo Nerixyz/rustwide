@@ -46,7 +46,7 @@ impl SandboxImage {
     pub fn remote(name: &str) -> Result<Self, CommandError> {
         let mut image = SandboxImage { name: name.into() };
         info!("pulling image {name} from Docker Hub");
-        Command::new_workspaceless("docker")
+        Command::new_workspaceless("podman")
             .args(["pull", name])
             .run()
             .map_err(|e| CommandError::SandboxImagePullFailed(Box::new(e)))?;
@@ -60,7 +60,7 @@ impl SandboxImage {
 
     fn ensure_exists_locally(&self) -> Result<(), CommandError> {
         info!("checking the image {} is available locally", self.name);
-        Command::new_workspaceless("docker")
+        Command::new_workspaceless("podman")
             .args(["image", "inspect", &self.name])
             .log_output(false)
             .run()
@@ -72,7 +72,7 @@ impl SandboxImage {
     /// In case of a github package registry image, something like:
     ///    ghcr.io/rust-lang/crates-build-env/linux@sha256:61361fe0a...
     pub fn get_name_with_hash(&self) -> Option<String> {
-        Command::new_workspaceless("docker")
+        Command::new_workspaceless("podman")
             .args([
                 "inspect",
                 &self.name,
@@ -655,7 +655,7 @@ impl SandboxBuilder {
         args.push("sleep".into());
         args.push("infinity".into());
 
-        let out = Command::new(workspace, "docker")
+        let out = Command::new(workspace, "podman")
             .args(&args)
             .run_capture()
             .map_err(|err| CommandError::SandboxContainerCreate(Box::new(err)))?;
@@ -714,7 +714,7 @@ impl fmt::Display for Container<'_> {
 impl Container<'_> {
     #[cfg_attr(feature = "tracing", tracing::instrument(skip_all, level = "debug"))]
     fn inspect(&self) -> Result<InspectContainer, CommandError> {
-        let output = Command::new(self.workspace, "docker")
+        let output = Command::new(self.workspace, "podman")
             .args(["inspect", self.id()])
             .log_output(false)
             .run_capture()?;
@@ -729,7 +729,7 @@ impl Container<'_> {
     /// Start the container in detached mode (without `-a`).
     #[cfg_attr(feature = "tracing", tracing::instrument(skip_all, level = "debug"))]
     fn start(&self) -> Result<(), CommandError> {
-        Command::new(self.workspace, "docker")
+        Command::new(self.workspace, "podman")
             .args(["start", self.id()])
             .log_output(false)
             .run()
@@ -768,7 +768,7 @@ impl Container<'_> {
         capture: bool,
     ) -> (SandboxStatistics, Result<ProcessOutput, CommandError>) {
         // Build the `docker exec` command with env/workdir/user from the sandbox config
-        let mut cmd = Command::new(self.workspace, "docker").arg("exec");
+        let mut cmd = Command::new(self.workspace, "podman").arg("exec");
 
         for (var, value) in command.env {
             cmd = cmd
@@ -834,7 +834,7 @@ impl Container<'_> {
         let Some(id) = self.id.take() else {
             return Ok(());
         };
-        if let Err(err) = Command::new(self.workspace, "docker")
+        if let Err(err) = Command::new(self.workspace, "podman")
             .args(["rm", "-f", &id])
             .run()
         {
@@ -1023,7 +1023,7 @@ impl<'w> Sandbox<'w> {
 /// will error too, but this function allows the caller to error earlier.
 pub fn docker_running(workspace: &Workspace) -> bool {
     info!("checking if the docker daemon is running");
-    Command::new(workspace, "docker")
+    Command::new(workspace, "podman")
         .args(["info"])
         .log_output(false)
         .run()

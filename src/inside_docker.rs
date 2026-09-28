@@ -13,7 +13,7 @@ impl CurrentContainer {
     pub(crate) fn detect(workspace: &Workspace) -> anyhow::Result<Option<Self>> {
         if let Some(id) = probe_container_id(workspace)? {
             info!("inspecting the current container");
-            let inspect = Command::new(workspace, "docker")
+            let inspect = Command::new(workspace, "podman")
                 .args(["inspect", &id])
                 .log_output(false)
                 .log_command(false)
@@ -55,7 +55,7 @@ pub(crate) fn probe_container_id(workspace: &Workspace) -> anyhow::Result<Option
     std::fs::write(&probe_path, probe_content.as_bytes())?;
 
     // Check if the probe exists on any of the currently running containers.
-    let out = Command::new(workspace, "docker")
+    let out = Command::new(workspace, "podman")
         .args(["ps", "--format", "{{.ID}}", "--no-trunc"])
         .log_output(false)
         .log_command(false)
@@ -63,7 +63,7 @@ pub(crate) fn probe_container_id(workspace: &Workspace) -> anyhow::Result<Option
     for id in out.stdout_lines() {
         info!("probing container id {id}");
 
-        let res = Command::new(workspace, "docker")
+        let res = Command::new(workspace, "podman")
             .args(["exec", id, "cat", probe_path_str])
             .log_output(false)
             .log_command(false)

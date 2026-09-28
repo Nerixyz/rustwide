@@ -243,7 +243,7 @@ impl<'w> CgroupStatsReader<'w> {
     }
 
     fn exec_cat_file(&self, path: &str) -> Option<Vec<String>> {
-        Command::new(self.workspace, "docker")
+        Command::new(self.workspace, "podman")
             .args(["exec", &self.container_id, "cat", path])
             .log_output(false)
             .log_command(false)

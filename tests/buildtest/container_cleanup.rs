@@ -64,7 +64,7 @@ fn test_container_recreated_when_previous_dies() {
             // container externally. The next `docker exec` will fail, and
             // the inspect that follows refreshes the sandbox's cached
             // running flag so the *next* command recreates the container.
-            let killed = std::process::Command::new("docker")
+            let killed = std::process::Command::new("podman")
                 .args(["kill", &first_id])
                 .output()
                 .expect("failed to spawn docker kill");
@@ -252,7 +252,7 @@ fn test_container_cleanup_on_command_failure() {
 
 fn assert_container_stopped_and_removed(container_id: &str) {
     // Verify the container is not running
-    let output = std::process::Command::new("docker")
+    let output = std::process::Command::new("podman")
         .args(["ps", "-q", "--filter", &format!("id={}", container_id)])
         .output()
         .expect("failed to run docker ps");
@@ -264,7 +264,7 @@ fn assert_container_stopped_and_removed(container_id: &str) {
     );
 
     // Verify the container has been removed entirely
-    let output = std::process::Command::new("docker")
+    let output = std::process::Command::new("podman")
         .args([
             "ps",
             "-a",
