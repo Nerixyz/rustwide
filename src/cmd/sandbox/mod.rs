@@ -716,7 +716,7 @@ impl Container<'_> {
     fn inspect(&self) -> Result<InspectContainer, CommandError> {
         let output = Command::new(self.workspace, "podman")
             .args(["inspect", self.id()])
-            .log_output(false)
+            .log_output(true)
             .run_capture()?;
 
         let mut data: Vec<InspectContainer> =
@@ -731,7 +731,7 @@ impl Container<'_> {
     fn start(&self) -> Result<(), CommandError> {
         Command::new(self.workspace, "podman")
             .args(["start", self.id()])
-            .log_output(false)
+            .log_output(true)
             .run()
             .map(|_| ())
     }
