@@ -636,6 +636,7 @@ impl SandboxBuilder {
         if !self.enable_networking {
             args.push("--network".into());
             args.push("none".into());
+            args.push("--cap-add=NET_ADMIN".into());
         }
 
         if let Some(name) = self.isolation.isolation_arg() {
