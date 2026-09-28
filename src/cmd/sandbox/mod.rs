@@ -636,7 +636,7 @@ impl SandboxBuilder {
         if !self.enable_networking {
             args.push("--network".into());
             args.push("none".into());
-            args.push("--cap-add=NET_ADMIN".into());
+            // args.push("--cap-add=NET_ADMIN".into());
         }
 
         if let Some(name) = self.isolation.isolation_arg() {
@@ -718,7 +718,7 @@ impl Container<'_> {
     fn inspect(&self) -> Result<InspectContainer, CommandError> {
         let output = Command::new(self.workspace, "podman")
             .args(["inspect", self.id()])
-            .log_output(true)
+            .log_output(false)
             .run_capture()?;
 
         let mut data: Vec<InspectContainer> =
@@ -733,7 +733,7 @@ impl Container<'_> {
     fn start(&self) -> Result<(), CommandError> {
         Command::new(self.workspace, "podman")
             .args(["start", self.id()])
-            .log_output(true)
+            .log_output(false)
             .run()
             .map(|_| ())
     }
