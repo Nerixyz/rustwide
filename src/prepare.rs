@@ -1,4 +1,5 @@
 use crate::cmd::{Command, CommandError, ProcessLinesActions};
+use crate::utils::retry_for;
 use crate::{Crate, Toolchain, Workspace, build::CratePatch};
 use anyhow::Context as _;
 use log::info;
@@ -40,7 +41,7 @@ impl<'a> Prepare<'a> {
         self.tweak_toml()?;
         self.validate_manifest()?;
         self.capture_lockfile()?;
-        self.fetch_deps()?;
+        retry_for(|| self.fetch_deps(), 5)?;
 
         Ok(())
     }

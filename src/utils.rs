@@ -146,6 +146,18 @@ pub(crate) fn normalize_path(path: &Path) -> PathBuf {
     p
 }
 
+pub fn retry_for<T, E>(mut f: impl FnMut() -> Result<T, E>, n: usize) -> Result<T, E> {
+    let mut i = 0;
+    loop {
+        i += 1;
+        match f() {
+            Ok(res) => break Ok(res),
+            Err(e) if i == n => break Err(e),
+            Err(_) => (),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
