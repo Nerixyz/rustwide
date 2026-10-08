@@ -32,7 +32,7 @@ mod native;
 mod prepare;
 pub mod toolchain;
 mod tools;
-mod utils;
+pub mod utils;
 mod workspace;
 
 pub use crate::build::{Build, BuildBuilder, BuildDirectory, BuildResult};
