@@ -294,6 +294,11 @@ impl Workspace {
         self.inner.path.join("builds")
     }
 
+    /// Path to the workspace root.
+    pub fn path(&self) -> &Path {
+        &self.inner.path
+    }
+
     /// return the used sandbox image for the workspace.
     pub fn sandbox_image(&self) -> &SandboxImage {
         &self.inner.sandbox_image
