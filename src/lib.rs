@@ -32,6 +32,7 @@ mod native;
 mod prepare;
 pub mod toolchain;
 mod tools;
+/// Cool utilities.
 pub mod utils;
 mod workspace;
 
