@@ -41,7 +41,7 @@ impl<'a> Prepare<'a> {
         self.tweak_toml()?;
         self.validate_manifest()?;
         self.capture_lockfile()?;
-        retry_for(|| self.fetch_deps(), 5)?;
+        retry_for(|| self.fetch_deps(), 10)?;
 
         Ok(())
     }

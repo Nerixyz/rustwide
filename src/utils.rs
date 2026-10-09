@@ -146,6 +146,7 @@ pub(crate) fn normalize_path(path: &Path) -> PathBuf {
     p
 }
 
+/// Retry `f` for `n` runs until it returns `T`.
 pub fn retry_for<T, E>(mut f: impl FnMut() -> Result<T, E>, n: usize) -> Result<T, E> {
     let mut i = 0;
     loop {
